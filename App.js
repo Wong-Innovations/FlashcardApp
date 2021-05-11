@@ -7,19 +7,33 @@ import Flashcard from './components/Flashcard';
 
 export default function App() {
 
-  const [flashcard, setFlashcards] = useState([]);
+  const [flashcards, setFlashcards] = useState(
+    [{
+      main: ['元気', '元気ですか。', '元気です。'],
+      secondary: ['', 'Are you well?', 'I am well.'],
+      answer: 'genki',
+    },
+     {
+      main: ['こら', 'これわ何ですか。', 'これわいくらですか。'],
+      secondary: ['', 'What is this?', 'How much is this?'],
+      answer: 'kore',
+     },
+    ]);
   const [guess, setGuess] = useState('');
   const [cardCompleted, setCardCompleted] = useState(false);
-
-  const answer = "genki";
+  const [cardNumber, setCardNumber] = useState(0);
 
   const handleCheckGuess = () => {
     Keyboard.dismiss();
-    if (guess == answer) {
+    if (guess == flashcards[cardNumber].answer) {
       setCardCompleted(true);
       setTimeout(() => {
         handleChangeCard();
         setCardCompleted(false);
+        if (cardNumber < flashcards.length-1)
+          setCardNumber(cardNumber+1);
+        else
+          setCardNumber(0);
       } , 1500);
     }
     setGuess('');
@@ -38,8 +52,8 @@ export default function App() {
 
         <View style={styles.flashcard}>
           <Flashcard
-            main={['元気', '元気ですか。', '元気です。']}
-            secondary={['', 'Are you well?', 'I am well.']}
+            main={flashcards[cardNumber].main}
+            secondary={flashcards[cardNumber].secondary}
           />
           {/* <Flashcard main={'genki'} secondary={'genki'} /> */}
         </View>
