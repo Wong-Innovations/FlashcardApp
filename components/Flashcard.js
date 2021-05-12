@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const Flashcard = (props) => {
@@ -12,8 +12,10 @@ const Flashcard = (props) => {
       setCardNumber(0);
   }
 
+  useEffect(() => setCardNumber(0), [props.main]);
+
   return (
-    <TouchableOpacity onPress={handleCycleFlashcard}>
+    <TouchableOpacity onPress={props.onPress? props.onPress : handleCycleFlashcard}>
       <View style={styles.flashcard}>
         <Text style={styles.main}>{props.main[cardNumber]}</Text>
         <Text style={styles.secondary}>{props.secondary[cardNumber]}</Text>
@@ -30,7 +32,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
     paddingVertical: 100,
   },
   main: {

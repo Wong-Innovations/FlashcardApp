@@ -1,110 +1,37 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Icon } from 'react-native-elements/dist/icons/Icon';
+import { StyleSheet, View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import Flashcard from './components/Flashcard';
+import FlashcardPreview from './components/FlashcardPreview';
+import RecallCards from './components/RecallCards';
+
+const Stack = createStackNavigator();
 
 export default function App() {
 
-  const [flashcards, setFlashcards] = useState(
-    [{
-      main: ['元気', '元気ですか。', '元気です。'],
-      secondary: ['', 'Are you well?', 'I am well.'],
-      answer: 'genki',
-    },
-     {
-      main: ['こら', 'これわ何ですか。', 'これわいくらですか。'],
-      secondary: ['', 'What is this?', 'How much is this?'],
-      answer: 'kore',
-     },
-    ]);
-  const [guess, setGuess] = useState('');
-  const [cardCompleted, setCardCompleted] = useState(false);
-  const [cardNumber, setCardNumber] = useState(0);
-
-  const handleCheckGuess = () => {
-    Keyboard.dismiss();
-    if (guess == flashcards[cardNumber].answer) {
-      setCardCompleted(true);
-      setTimeout(() => {
-        handleChangeCard();
-        setCardCompleted(false);
-        if (cardNumber < flashcards.length-1)
-          setCardNumber(cardNumber+1);
-        else
-          setCardNumber(0);
-      } , 1500);
-    }
-    setGuess('');
-  }
-
-  const handleChangeCard = () => {
-
-  } 
+  
 
   return (
     <View style={styles.container}>
-      
-      {/* Flashcard Wrapper */}
-      <View style={styles.flashcardWrapper}>
-        <Text style={styles.sectionTitle}>My Flashcards</Text>
-
-        <View style={styles.flashcard}>
-          <Flashcard
-            main={flashcards[cardNumber].main}
-            secondary={flashcards[cardNumber].secondary}
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name={'My Flashcard Sets'}
+            component={FlashcardPreview}
           />
-          {/* <Flashcard main={'genki'} secondary={'genki'} /> */}
-        </View>
-
-      </View>
-
-      {/* Answer Verification */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.answerWrapper}
-      >
-        <TextInput
-          style={styles.input}
-          placeholder={'Answer'}
-          value={guess}
-          onChangeText={text => setGuess(text)}
-        />
-
-        <TouchableOpacity onPress={handleCheckGuess}>
-          <View style={styles.buttonWrapper}>
-            <Text style={styles.buttonText}>Check</Text>
-          </View>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
-
-      {/* Success Modal */}
-      <Modal
-        animationType={'slide'}
-        transparent={true}
-        visible={cardCompleted}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <Icon
-              reverse
-              name={'check'}
-              type={'font-awesome'}
-              color={"#32cd32"}
-              reverseColor={'#FFF'}
-              size={30}
-            />
-            <Text style={styles.modalText}>Good Job!</Text>
-          </View>
-        </View>
-        
-      </Modal>
-      
+          <Stack.Screen 
+            name={'Cards'}
+            component={RecallCards}
+            options={{ headerBackTitle: 'Back' }}
+          />
+        </Stack.Navigator>
+        {/* <View style={styles.container}>
+          <FlashcardPreview flashcards={flashcards} />
+        </View> */}
+      </NavigationContainer>
     </View>
   );
 }
@@ -113,69 +40,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E8EAED',
-  },
-  flashcardWrapper: {
-    paddingTop: 80,
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  flashcard: {
-    marginTop: 25,
-  },
-  answerWrapper: {
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  input: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    width: 250,
-    backgroundColor: '#FFF',
-    borderRadius: 60,
-    borderColor: '#C0C0C0',
-  },
-  buttonWrapper: {
-    width: 100,
-    height: 50,
-    borderRadius: 50,
-    backgroundColor: '#FFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    fontWeight: 'bold',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modal: {
-    width: 250,
-    height: 200,
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 40,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalText: {
-    fontWeight: 'bold',
-    marginTop: 10,
-    fontSize: 16,
   },
 });
