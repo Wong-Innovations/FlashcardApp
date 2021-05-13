@@ -84,7 +84,7 @@ const RecallCards = ({ navigation, route }) => {
               reverse
               name={'check'}
               type={'font-awesome'}
-              color={"#32cd32"}
+              color={'#32cd32'}
               reverseColor={'#FFF'}
               size={30}
             />

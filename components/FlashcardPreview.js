@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, ScrollView } from 'react-native';
 import { View, Text, StyleSheet } from 'react-native';
 
 import Flashcard from './Flashcard';
+import NewFlashcard from './NewFlashcard';
 
 const FlashcardPreview = ({ navigation }) => {
   
+  const [buttonVisible, setButtonVisible] = useState(1);
+  const [addingCard, setAddingCard] = useState(false);
+  const [newCard, setNewCard] = useState({
+    name: '',
+    description: ''
+  });
   const [flashcards, setFlashcards] = useState(
     [
       { name: 'Japanese Vocab',
@@ -43,12 +50,48 @@ const FlashcardPreview = ({ navigation }) => {
   const handlePress = (index) => {
     navigation.navigate('Cards', { flashcards: flashcards[index] })
   }
+  const addCard = () => {
+    setAddingCard(true);
+    setButtonVisible(0);
+  }
+
+  const saveCard = () => {
+    setFlashcards([
+      {
+        ...newCard,
+        card: [{
+          main: [''],
+          secondary: [''],
+          answer: '',
+        }]
+      },
+      ...flashcards
+    ]);
+    closeCard();
+  }
+
+  const closeCard = () => {
+    setNewCard({
+      name: '',
+      description: ''
+    });
+    setButtonVisible(1);
+    setAddingCard(false);
+  }
 
   return (
-    <View>
-      {flashcards.map((flashcard, index) => {
-        return (
-          <View style={styles.flashcardWrapper}>
+    <View style={{ flex: 1, paddingBottom: 110 }}>
+      <ScrollView style={styles.flashcardWrapper} contentContainerStyle={{ flexGrow: 1 }}>
+        {(addingCard) ? (
+          <View style={styles.flashcard}>
+            <NewFlashcard
+              value={newCard}
+              onChangeText={setNewCard}
+            />
+          </View>
+        ) : null}
+        {flashcards.map((flashcard, index) => {
+          return (
             <View style={styles.flashcard}>
               <Flashcard
                 main={[flashcard.name]}
@@ -56,12 +99,28 @@ const FlashcardPreview = ({ navigation }) => {
                 onPress={() => handlePress(index)}
               />
             </View>
+          )
+        })}
+      </ScrollView>
+      {/* Bottom Button */}
+      {(buttonVisible)? (<View style={styles.bottom}>
+        <TouchableOpacity onPress={addCard}>
+          <View style={styles.buttonWrapper}>
+            <Text style={styles.buttonText}>NEW SET</Text>
           </View>
-        )
-      })}
-
+        </TouchableOpacity>
+      </View>) : (<View style={styles.bottom}>
+        <TouchableOpacity onPress={saveCard}>
+          <View style={{
+            ...styles.buttonWrapper,
+            backgroundColor: '#32cd32',
+            borderWidth: 0,
+          }}>
+            <Text style={{...styles.buttonText,color:'#FFF'}}>SAVE</Text>
+          </View>
+        </TouchableOpacity>
+      </View>)}
     </View>
-    
   );
 }
 
@@ -81,6 +140,26 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 24,
+    fontWeight: 'bold',
+  },
+  bottom: {
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginBottom: 36
+  },
+  buttonWrapper: {
+    width: 350,
+    height: 50,
+    borderRadius: 50,
+    borderColor: '#333',
+    borderWidth: 2,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
     fontWeight: 'bold',
   },
 });
