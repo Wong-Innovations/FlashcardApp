@@ -13,6 +13,7 @@ const FlashcardPreview = ({ navigation }) => {
     name: '',
     description: ''
   });
+  const [editCard, setEditCard] = useState(-1);
   const [flashcards, setFlashcards] = useState(
     [
       { name: 'Japanese Vocab',
@@ -79,6 +80,14 @@ const FlashcardPreview = ({ navigation }) => {
     setAddingCard(false);
   }
 
+  const openContext = (index) => {
+    setEditCard(index);
+  }
+
+  const closeContext = () => {
+    setEditCard(-1);
+  } 
+
   return (
     <View style={{ flex: 1, paddingBottom: 110 }}>
       <ScrollView style={styles.flashcardWrapper} contentContainerStyle={{ flexGrow: 1 }}>
@@ -97,6 +106,7 @@ const FlashcardPreview = ({ navigation }) => {
                 main={[flashcard.name]}
                 secondary={[flashcard.description]}
                 onPress={() => handlePress(index)}
+                onLongPress={() => openContext(index)}
               />
             </View>
           )
@@ -120,6 +130,46 @@ const FlashcardPreview = ({ navigation }) => {
           </View>
         </TouchableOpacity>
       </View>)}
+
+      {(editCard > -1)? (
+        <View style={{
+          ...styles.bottom,
+          borderWidth:2,
+          borderRadius:25,
+          backgroundColor:'#FFF',
+          zIndex:1000,
+        }}>
+          <TouchableOpacity onPress={() => {navigation.navigate('Edit');closeContext()}}>
+            <View style={styles.contextButtons}>
+              <Text style={styles.buttonText}>EDIT</Text>
+            </View>
+          </TouchableOpacity>
+          <View
+            style={{
+              width: 350,
+              borderBottomColor: 'black',
+              borderBottomWidth: 1,
+            }}
+          />
+          <TouchableOpacity onPress={() => {setFlashcards(flashcards.splice(editCard-1,1));closeContext()}}>
+            <View style={styles.contextButtons}>
+              <Text style={styles.buttonText}>DELETE</Text>
+            </View>
+          </TouchableOpacity>
+          <View
+            style={{
+              width: 350,
+              borderBottomColor: 'black',
+              borderBottomWidth: 1,
+            }}
+          />
+          <TouchableOpacity onPress={closeContext}>
+            <View style={styles.contextButtons}>
+              <Text style={styles.buttonText}>CANCEL</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      ) : null }
     </View>
   );
 }
@@ -162,6 +212,12 @@ const styles = StyleSheet.create({
   buttonText: {
     fontWeight: 'bold',
   },
+  contextButtons: {
+    width: 350,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 export default FlashcardPreview;

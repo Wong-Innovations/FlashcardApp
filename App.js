@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import FlashcardPreview from './components/FlashcardPreview';
 import RecallCards from './components/RecallCards';
+import EditCards from './components/EditCards';
 
 const Stack = createStackNavigator();
 
@@ -27,10 +28,12 @@ export default function App() {
             component={RecallCards}
             options={{ headerBackTitle: 'Back' }}
           />
+          <Stack.Screen 
+            name={'Edit'}
+            component={EditCards}
+            options={{ headerBackTitle: 'Back' }}
+          />
         </Stack.Navigator>
-        {/* <View style={styles.container}>
-          <FlashcardPreview flashcards={flashcards} />
-        </View> */}
       </NavigationContainer>
     </View>
   );

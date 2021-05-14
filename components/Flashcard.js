@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Icon } from 'react-native';
 
 const Flashcard = (props) => {
 
@@ -15,7 +15,10 @@ const Flashcard = (props) => {
   useEffect(() => setCardNumber(0), [props.main]);
 
   return (
-    <TouchableOpacity onPress={props.onPress? props.onPress : handleCycleFlashcard}>
+    <TouchableOpacity
+      onPress={props.onPress? props.onPress : handleCycleFlashcard}
+      onLongPress={props.onLongPress}
+    >
       <View style={styles.flashcard}>
         <Text style={styles.main}>{props.main[cardNumber]}</Text>
         <Text style={styles.secondary}>{props.secondary[cardNumber]}</Text>
