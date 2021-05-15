@@ -15,6 +15,7 @@ const RecallCards = ({ navigation, route }) => {
   const [guess, setGuess] = useState('');
   const [cardCompleted, setCardCompleted] = useState(false);
   const [cardNumber, setCardNumber] = useState(0);
+  const [editCard, setEditCard] = useState(-1);
 
   const handleCheckGuess = () => {
     Keyboard.dismiss();
@@ -32,67 +33,74 @@ const RecallCards = ({ navigation, route }) => {
     setGuess('');
   }
 
-  const handleChangeCard = () => {
+  const handleChangeCard = (index) => {
 
   }
 
+  const openContext = (index) => {
+    setEditCard(index);
+  }
+
+  const closeContext = () => {
+    setEditCard(-1);
+  } 
+
   return (
-    <View>
+    <View style={{ flex: 1, paddingBottom: 110 }}>
       {/* Flashcard Wrapper */}
       <View style={styles.flashcardWrapper}>
-        <View style={styles.flashcard}>
-          <Flashcard
-            main={route.params.flashcards.card[cardNumber].main}
-            secondary={route.params.flashcards.card[cardNumber].secondary}
-          />
-        </View>
-
+        {route.params.flashcards.map((flashcard, index) => {
+          return (
+            <View style={styles.flashcard}>
+              <Flashcard
+                main={flashcard.main}
+                secondary={flashcard.secondary}
+                onLongPress={() => openContext(index)}
+              />
+            </View>
+          )
+        })}
       </View>
 
-      {/* Answer Verification */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.answerWrapper}
-      >
-        <TextInput
-          style={styles.input}
-          placeholder={'Answer'}
-          value={guess}
-          onChangeText={text => setGuess(text)}
-        />
-
-        <TouchableOpacity onPress={handleCheckGuess}>
-          <View style={styles.buttonWrapper}>
-            <Text style={styles.buttonText}>Check</Text>
-          </View>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
-
-      {/* Success Modal */}
-      <Modal
-        animationType={'slide'}
-        transparent={true}
-        visible={cardCompleted}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <Icon
-              reverse
-              name={'check'}
-              type={'font-awesome'}
-              color={'#32cd32'}
-              reverseColor={'#FFF'}
-              size={30}
-            />
-            <Text style={styles.modalText}>Good Job!</Text>
-          </View>
+      {(editCard > -1)? (
+        <View style={{
+          ...styles.bottom,
+          borderWidth:2,
+          borderRadius:25,
+          backgroundColor:'#FFF',
+          zIndex:1000,
+        }}>
+          <TouchableOpacity onPress={() => {closeContext()}}>
+            <View style={styles.contextButtons}>
+              <Text style={styles.buttonText}>EDIT</Text>
+            </View>
+          </TouchableOpacity>
+          <View
+            style={{
+              width: 350,
+              borderBottomColor: 'black',
+              borderBottomWidth: 1,
+            }}
+          />
+          <TouchableOpacity onPress={() => {closeContext()}}>
+            <View style={styles.contextButtons}>
+              <Text style={styles.buttonText}>DELETE</Text>
+            </View>
+          </TouchableOpacity>
+          <View
+            style={{
+              width: 350,
+              borderBottomColor: 'black',
+              borderBottomWidth: 1,
+            }}
+          />
+          <TouchableOpacity onPress={closeContext}>
+            <View style={styles.contextButtons}>
+              <Text style={styles.buttonText}>CANCEL</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        
-      </Modal>
+      ) : null }
     </View>
   );
 }
@@ -107,26 +115,20 @@ const styles = StyleSheet.create({
   },
   flashcard: {
     marginTop: 25,
-    marginBottom: 15,
   },
-  answerWrapper: {
-    paddingHorizontal: 20,
-    flexDirection: 'row',
+  bottom: {
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  input: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    width: 250,
-    backgroundColor: '#FFF',
-    borderRadius: 60,
-    borderColor: '#C0C0C0',
+    marginBottom: 36
   },
   buttonWrapper: {
-    width: 100,
+    width: 350,
     height: 50,
     borderRadius: 50,
+    borderColor: '#333',
+    borderWidth: 2,
     backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
@@ -134,34 +136,12 @@ const styles = StyleSheet.create({
   buttonText: {
     fontWeight: 'bold',
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modal: {
-    width: 250,
-    height: 200,
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 40,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalText: {
-    fontWeight: 'bold',
-    marginTop: 10,
-    fontSize: 16,
-  },
+  contextButtons: {
+    width: 350,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 export default RecallCards;

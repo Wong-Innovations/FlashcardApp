@@ -139,7 +139,7 @@ const FlashcardPreview = ({ navigation }) => {
           backgroundColor:'#FFF',
           zIndex:1000,
         }}>
-          <TouchableOpacity onPress={() => {navigation.navigate('Edit');closeContext()}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('Edit', { flashcards: flashcards[editCard].card });closeContext()}}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>EDIT</Text>
             </View>
@@ -151,7 +151,7 @@ const FlashcardPreview = ({ navigation }) => {
               borderBottomWidth: 1,
             }}
           />
-          <TouchableOpacity onPress={() => {setFlashcards(flashcards.splice(editCard-1,1));closeContext()}}>
+          <TouchableOpacity onPress={() => {setFlashcards(flashcards.filter((val,index)=>(index != editCard)));closeContext()}}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>DELETE</Text>
             </View>
@@ -163,7 +163,7 @@ const FlashcardPreview = ({ navigation }) => {
               borderBottomWidth: 1,
             }}
           />
-          <TouchableOpacity onPress={closeContext}>
+          <TouchableOpacity onPress={() => {closeContext();}}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>CANCEL</Text>
             </View>
