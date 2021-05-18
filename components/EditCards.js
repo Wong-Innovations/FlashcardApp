@@ -1,41 +1,18 @@
-import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Icon } from 'react-native-elements/dist/icons/Icon';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import Flashcard from './Flashcard';
+import { localGetFlashcards, localSaveFlashcards } from './LocalStorage/LocalStorage';
 
-const RecallCards = ({ navigation, route }) => {
+const EditCards = ({ navigation, route }) => {
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      title: route.params.flashcards.name
-    });
-  });
-
-  const [guess, setGuess] = useState('');
-  const [cardCompleted, setCardCompleted] = useState(false);
   const [cardNumber, setCardNumber] = useState(0);
   const [editCard, setEditCard] = useState(-1);
+  const [flashcards, setFlashcards] = useState(null);
+  const [asyncCall, setAsyncCall] = useState(false);
 
-  const handleCheckGuess = () => {
-    Keyboard.dismiss();
-    if (guess == route.params.flashcards.card[cardNumber].answer) {
-      setCardCompleted(true);
-      setTimeout(() => {
-        handleChangeCard();
-        setCardCompleted(false);
-        if (cardNumber < route.params.flashcards.card.length-1)
-          setCardNumber(cardNumber+1);
-        else
-          setCardNumber(0);
-      } , 1500);
-    }
-    setGuess('');
-  }
-
-  const handleChangeCard = (index) => {
-
-  }
+  setAsyncCall(true);
+  localGetFlashcards().then((val) => setFlashcards(val)).then(() => setAsyncCall(false));
 
   const openContext = (index) => {
     setEditCard(index);
@@ -43,13 +20,27 @@ const RecallCards = ({ navigation, route }) => {
 
   const closeContext = () => {
     setEditCard(-1);
-  } 
+  }
 
-  return (
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: (flashcards !== null) ? flashcards[route.params.index].name : 'test',
+    });
+  });
+
+  useEffect(() => {
+    return () => {
+      while (asyncCall) {
+        // do nothing
+      }
+    }
+  });
+
+  return (flashcards === null) ? null : (
     <View style={{ flex: 1, paddingBottom: 110 }}>
       {/* Flashcard Wrapper */}
       <View style={styles.flashcardWrapper}>
-        {route.params.flashcards.map((flashcard, index) => {
+        {flashcards[route.params.index].card.map((flashcard, index) => {
           return (
             <View style={styles.flashcard}>
               <Flashcard
@@ -82,7 +73,22 @@ const RecallCards = ({ navigation, route }) => {
               borderBottomWidth: 1,
             }}
           />
-          <TouchableOpacity onPress={() => {closeContext()}}>
+          <TouchableOpacity onPress={() => {
+            let temp = [];
+            flashcards.forEach((element, index) => {
+              if (index != route.params.index) temp.push(element);
+              else temp.push({
+                name: element.name,
+                description: element.description,
+                card: element.card.filter((val,index)=>(index != editCard))
+              });
+            });
+            setFlashcards(temp);
+            setAsyncCall(true);
+            localSaveFlashcards(flashcards).then(() => setAsyncCall(false));
+            console.log(temp);
+            closeContext();
+          }}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>DELETE</Text>
             </View>
@@ -116,6 +122,20 @@ const styles = StyleSheet.create({
   flashcard: {
     marginTop: 25,
   },
+  answerWrapper: {
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  input: {
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    width: 250,
+    backgroundColor: '#FFF',
+    borderRadius: 60,
+    borderColor: '#C0C0C0',
+  },
   bottom: {
     position: 'absolute',
     bottom: 0,
@@ -144,4 +164,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default RecallCards;
+export default EditCards;

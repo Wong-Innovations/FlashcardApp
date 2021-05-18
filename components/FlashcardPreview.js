@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, ScrollView } from 'react-native';
 import { View, Text, StyleSheet } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Flashcard from './Flashcard';
 import NewFlashcard from './NewFlashcard';
+import { localGetFlashcards, localSaveFlashcards } from './LocalStorage/LocalStorage';
+import { deleteSet } from '../actions/flashcards';
 
 const FlashcardPreview = ({ navigation }) => {
   
@@ -14,39 +17,13 @@ const FlashcardPreview = ({ navigation }) => {
     description: ''
   });
   const [editCard, setEditCard] = useState(-1);
-  const [flashcards, setFlashcards] = useState(
-    [
-      { name: 'Japanese Vocab',
-        description: 'Words and Sentence Practice',
-        card: [
-          {
-            main: ['元気', '元気ですか。', '元気です。'],
-            secondary: ['', 'Are you well?', 'I am well.'],
-            answer: 'genki',
-          },
-          {
-            main: ['こら', 'これわ何ですか。', 'これわいくらですか。'],
-            secondary: ['', 'What is this?', 'How much is this?'],
-            answer: 'kore',
-          },
-        ]
-      },
-      { name: 'Hiragana',
-        description: 'Japanese Lettering Practice',
-        card: [
-          {
-            main: ['あ'],
-            secondary: [''],
-            answer: 'a',
-          },
-          {
-            main: ['い'],
-            secondary: [''],
-            answer: 'i',
-          },
-        ]
-      },
-    ]);
+
+  const flashcards = useSelector(state => state.flashcards);
+  const dispatch = useDispatch();
+  const deleteset = index => dispatch(deleteSet(index));
+
+  // setAsyncCall(true);
+  // localGetFlashcards().then((val) => setFlashcards(val)).then(() => setAsyncCall(false));
 
   const handlePress = (index) => {
     navigation.navigate('Cards', { flashcards: flashcards[index] })
@@ -86,7 +63,7 @@ const FlashcardPreview = ({ navigation }) => {
 
   const closeContext = () => {
     setEditCard(-1);
-  } 
+  }
 
   return (
     <View style={{ flex: 1, paddingBottom: 110 }}>
@@ -139,7 +116,7 @@ const FlashcardPreview = ({ navigation }) => {
           backgroundColor:'#FFF',
           zIndex:1000,
         }}>
-          <TouchableOpacity onPress={() => {navigation.navigate('Edit', { flashcards: flashcards[editCard].card });closeContext()}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('Edit', { index: editCard });closeContext()}}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>EDIT</Text>
             </View>
@@ -151,7 +128,7 @@ const FlashcardPreview = ({ navigation }) => {
               borderBottomWidth: 1,
             }}
           />
-          <TouchableOpacity onPress={() => {setFlashcards(flashcards.filter((val,index)=>(index != editCard)));closeContext()}}>
+          <TouchableOpacity onPress={() => {deleteset(editCard);closeContext();}}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>DELETE</Text>
             </View>
