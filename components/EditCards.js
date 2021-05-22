@@ -1,18 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteCard, addCardPage, createCard } from '../actions/flashcards';
 
 import Flashcard from './Flashcard';
-import { localGetFlashcards, localSaveFlashcards } from './LocalStorage/LocalStorage';
+import SwipeableNewFlashcard from './SwipeableNewFlashcard';
 
 const EditCards = ({ navigation, route }) => {
 
+  const [buttonVisible, setButtonVisible] = useState(1);
+  const [addingCard, setAddingCard] = useState(false);
   const [cardNumber, setCardNumber] = useState(0);
   const [editCard, setEditCard] = useState(-1);
-  const [flashcards, setFlashcards] = useState(null);
-  const [asyncCall, setAsyncCall] = useState(false);
+  const [newCard, setNewCard] = useState({
+    main: [''],
+    secondary: [''],
+    answer: ''
+  });
 
-  setAsyncCall(true);
-  localGetFlashcards().then((val) => setFlashcards(val)).then(() => setAsyncCall(false));
+  const flashcards = useSelector(state => state.flashcards[route.params.setIndex]);
+
+  const dispatch = useDispatch();
+  const deletecard = (setIndex, cardIndex) => dispatch(deleteCard(setIndex, cardIndex));
+  const addcardpage = (setIndex, cardIndex) => dispatch(addCardPage(setIndex, cardIndex));
+  const savecard = (setIndex, card) => dispatch(createCard(setIndex, card));
+
+  // setAsyncCall(true);
+  // localGetFlashcards().then((val) => setFlashcards(val)).then(() => setAsyncCall(false));
 
   const openContext = (index) => {
     setEditCard(index);
@@ -22,25 +36,46 @@ const EditCards = ({ navigation, route }) => {
     setEditCard(-1);
   }
 
+  const addCard = () => {
+    setAddingCard(true);
+    setButtonVisible(0);
+  }
+
+  const saveCard = () => {
+    savecard(route.params.setIndex, newCard);
+    closeCard();
+  }
+
+  const closeCard = () => {
+    setNewCard({
+      main: [''],
+      secondary: [''],
+      answer: ''
+    });
+    setButtonVisible(1);
+    setAddingCard(false);
+  }
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      title: (flashcards !== null) ? flashcards[route.params.index].name : 'test',
+      title: (flashcards !== null) ? flashcards.name : 'test',
     });
-  });
-
-  useEffect(() => {
-    return () => {
-      while (asyncCall) {
-        // do nothing
-      }
-    }
   });
 
   return (flashcards === null) ? null : (
     <View style={{ flex: 1, paddingBottom: 110 }}>
       {/* Flashcard Wrapper */}
       <View style={styles.flashcardWrapper}>
-        {flashcards[route.params.index].card.map((flashcard, index) => {
+        {(addingCard) ? (
+          <View style={styles.flashcard}>
+            <SwipeableNewFlashcard
+              value={newCard}
+              onChangeText={setNewCard}
+              onNewCardPage={(index) => addcardpage(route.params.setIndex, index)}
+            />
+          </View>
+        ) : null}
+        {flashcards.card.map((flashcard, index) => {
           return (
             <View style={styles.flashcard}>
               <Flashcard
@@ -52,6 +87,25 @@ const EditCards = ({ navigation, route }) => {
           )
         })}
       </View>
+
+      {/* Bottom Button */}
+      {(buttonVisible)? (<View style={styles.bottom}>
+        <TouchableOpacity onPress={addCard}>
+          <View style={styles.buttonWrapper}>
+            <Text style={styles.buttonText}>NEW CARD</Text>
+          </View>
+        </TouchableOpacity>
+      </View>) : (<View style={styles.bottom}>
+        <TouchableOpacity onPress={() => saveCard()}>
+          <View style={{
+            ...styles.buttonWrapper,
+            backgroundColor: '#32cd32',
+            borderWidth: 0,
+          }}>
+            <Text style={{...styles.buttonText,color:'#FFF'}}>SAVE</Text>
+          </View>
+        </TouchableOpacity>
+      </View>)}
 
       {(editCard > -1)? (
         <View style={{
@@ -74,19 +128,7 @@ const EditCards = ({ navigation, route }) => {
             }}
           />
           <TouchableOpacity onPress={() => {
-            let temp = [];
-            flashcards.forEach((element, index) => {
-              if (index != route.params.index) temp.push(element);
-              else temp.push({
-                name: element.name,
-                description: element.description,
-                card: element.card.filter((val,index)=>(index != editCard))
-              });
-            });
-            setFlashcards(temp);
-            setAsyncCall(true);
-            localSaveFlashcards(flashcards).then(() => setAsyncCall(false));
-            console.log(temp);
+            deletecard(route.params.setIndex, editCard);
             closeContext();
           }}>
             <View style={styles.contextButtons}>

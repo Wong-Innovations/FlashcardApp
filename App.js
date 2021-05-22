@@ -1,11 +1,13 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import flashcardsReducer from './reducers/flashcardsReducer';
 import FlashcardPreview from './components/FlashcardPreview';
@@ -13,7 +15,12 @@ import RecallCards from './components/RecallCards';
 import EditCards from './components/EditCards';
 
 const Stack = createStackNavigator();
-const store = createStore(flashcardsReducer);
+const store = createStore(flashcardsReducer, applyMiddleware(thunk));
+
+store.subscribe(() => {
+  const jsonValue = JSON.stringify(store.getState().flashcards);
+  AsyncStorage.setItem('flashcards', jsonValue);
+});
 
 export default function App() {
 

@@ -1,57 +1,59 @@
-import { DELETE_SET, DELETE_CARD } from '../constants';
+import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, ADD_CARD_PAGE, GET_CARDS, SAVE_CARDS } from '../constants';
 
 const initialState = {
   flashcards: [
-    { name: 'Japanese Vocab',
-      description: 'Words and Sentence Practice',
+    { name: '',
+      description: '',
       card: [
         {
-          main: ['元気', '元気ですか。', '元気です。'],
-          secondary: ['', 'Are you well?', 'I am well.'],
-          answer: 'genki',
-        },
-        {
-          main: ['こら', 'これわ何ですか。', 'これわいくらですか。'],
-          secondary: ['', 'What is this?', 'How much is this?'],
-          answer: 'kore',
-        },
-      ]
-    },
-    { name: 'Hiragana',
-      description: 'Japanese Lettering Practice',
-      card: [
-        {
-          main: ['あ'],
+          main: [''],
           secondary: [''],
-          answer: 'a',
-        },
-        {
-          main: ['い'],
-          secondary: [''],
-          answer: 'i',
+          answer: '',
         },
       ]
     },
   ]
 };
 
-const deleteSetReducer = (state = initialState, action) => {
+const flashcardsReducer = (state = initialState, action) => {
   const newFlashcards = state.flashcards;
   switch(action.type) {
 
     case DELETE_SET:
       newFlashcards.splice(action.setIndex, 1);
-      console.log(newFlashcards);
       return { flashcards: newFlashcards };
 
     case DELETE_CARD:
       newFlashcards[action.setIndex].card.splice(action.cardIndex, 1);
-      console.log(newFlashcards);
       return { flashcards: newFlashcards };
 
+    case CREATE_SET:
+      newFlashcards.unshift({
+        name: action.name,
+        description: action.description,
+        card: []
+      });
+      return { flashcards: newFlashcards };
+
+    case CREATE_CARD:
+      newFlashcards[action.setIndex].card.unshift({
+        main: action.main,
+        secondary: action.secondary,
+        answer: action.answer
+      });
+      return { flashcards: newFlashcards };
+
+    case ADD_CARD_PAGE:
+      newFlashcards[action.setIndex].card[action.cardIndex].main.push('');
+      newFlashcards[action.setIndex].card[action.cardIndex].secondary.push('');
+      return { flashcards: newFlashcards };
+
+    case GET_CARDS:
+      return { flashcards: action.data };
+      
     default:
       return state;
   }
 }
 
-export default deleteSetReducer;
+export default flashcardsReducer;

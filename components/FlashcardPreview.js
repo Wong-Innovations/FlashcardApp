@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, ScrollView } from 'react-native';
-import { View, Text, StyleSheet } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { View, Text, StyleSheet, AppState } from 'react-native';
+import { useSelector, useDispatch, connect } from 'react-redux';
 
 import Flashcard from './Flashcard';
 import NewFlashcard from './NewFlashcard';
-import { localGetFlashcards, localSaveFlashcards } from './LocalStorage/LocalStorage';
-import { deleteSet } from '../actions/flashcards';
+import { deleteSet, createSet, localGetFlashcards } from '../actions/flashcards';
 
 const FlashcardPreview = ({ navigation }) => {
   
@@ -17,16 +16,19 @@ const FlashcardPreview = ({ navigation }) => {
     description: ''
   });
   const [editCard, setEditCard] = useState(-1);
-
   const flashcards = useSelector(state => state.flashcards);
   const dispatch = useDispatch();
   const deleteset = index => dispatch(deleteSet(index));
+  const createset = (name, description) => dispatch(createSet(name, description));
 
   // setAsyncCall(true);
   // localGetFlashcards().then((val) => setFlashcards(val)).then(() => setAsyncCall(false));
 
   const handlePress = (index) => {
-    navigation.navigate('Cards', { flashcards: flashcards[index] })
+    if (flashcards[index].card.length === 0)
+      navigation.navigate('Edit', { setIndex: index });
+    else
+      navigation.navigate('Cards', { setIndex: index });
   }
   const addCard = () => {
     setAddingCard(true);
@@ -34,17 +36,7 @@ const FlashcardPreview = ({ navigation }) => {
   }
 
   const saveCard = () => {
-    setFlashcards([
-      {
-        ...newCard,
-        card: [{
-          main: [''],
-          secondary: [''],
-          answer: '',
-        }]
-      },
-      ...flashcards
-    ]);
+    createset(newCard.name, newCard.description);
     closeCard();
   }
 
@@ -64,6 +56,16 @@ const FlashcardPreview = ({ navigation }) => {
   const closeContext = () => {
     setEditCard(-1);
   }
+
+  useEffect(() => {
+    dispatch(localGetFlashcards());
+  }, []);
+
+  AppState.addEventListener('change', state => {
+    if (state === 'active') {
+      dispatch(localGetFlashcards());
+    }
+  });
 
   return (
     <View style={{ flex: 1, paddingBottom: 110 }}>
@@ -97,7 +99,7 @@ const FlashcardPreview = ({ navigation }) => {
           </View>
         </TouchableOpacity>
       </View>) : (<View style={styles.bottom}>
-        <TouchableOpacity onPress={saveCard}>
+        <TouchableOpacity onPress={() => saveCard()}>
           <View style={{
             ...styles.buttonWrapper,
             backgroundColor: '#32cd32',
@@ -116,7 +118,7 @@ const FlashcardPreview = ({ navigation }) => {
           backgroundColor:'#FFF',
           zIndex:1000,
         }}>
-          <TouchableOpacity onPress={() => {navigation.navigate('Edit', { index: editCard });closeContext()}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('Edit', { setIndex: editCard });closeContext()}}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>EDIT</Text>
             </View>
@@ -196,5 +198,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   }
 });
+
+// const mapStateToProps = (state) => {
+//   return {}
+// }
+
+// const mapDispatchToProps = {
+//   getFlashcards: localGetFlashcards
+// }
 
 export default FlashcardPreview;

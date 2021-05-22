@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Flashcard from './Flashcard';
 
 const RecallCards = ({ navigation, route }) => {
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      title: route.params.flashcards.name
-    });
-  });
-
   const [guess, setGuess] = useState('');
   const [cardCompleted, setCardCompleted] = useState(false);
   const [cardNumber, setCardNumber] = useState(0);
 
+  const flashcards = useSelector(state => state.flashcards[route.params.setIndex]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: flashcards.name
+    });
+  });
+
   const handleCheckGuess = () => {
     Keyboard.dismiss();
-    if (guess == route.params.flashcards.card[cardNumber].answer) {
+    if (guess == flashcards.card[cardNumber].answer) {
       setCardCompleted(true);
       setTimeout(() => {
         handleChangeCard();
         setCardCompleted(false);
-        if (cardNumber < route.params.flashcards.card.length-1)
+        if (cardNumber < flashcards.card.length-1)
           setCardNumber(cardNumber+1);
         else
           setCardNumber(0);
@@ -42,8 +45,8 @@ const RecallCards = ({ navigation, route }) => {
       <View style={styles.flashcardWrapper}>
         <View style={styles.flashcard}>
           <Flashcard
-            main={route.params.flashcards.card[cardNumber].main}
-            secondary={route.params.flashcards.card[cardNumber].secondary}
+            main={flashcards.card[cardNumber].main}
+            secondary={flashcards.card[cardNumber].secondary}
           />
         </View>
 
