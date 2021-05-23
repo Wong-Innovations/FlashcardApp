@@ -1,13 +1,26 @@
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import { useSelector, useDispatch } from 'react-redux';
+import { updateCardWeight } from '../actions/flashcards';
 
 import Flashcard from './Flashcard';
 
 const RecallCards = ({ navigation, route }) => {
 
   const flashcards = useSelector(state => state.flashcards[route.params.setIndex]);
+
+  const dispatch = useDispatch();
 
   const getRandomCard = () => {
     let cdf = [0];
@@ -44,6 +57,7 @@ const RecallCards = ({ navigation, route }) => {
   const handleCheckGuess = () => {
     Keyboard.dismiss();
     if (guess == flashcards.card[cardNumber].answer) {
+      dispatch(updateCardWeight(route.params.setIndex, cardNumber, 2));
       setCardCompleted(true);
       setTimeout(() => {
         handleChangeCard();
@@ -56,6 +70,8 @@ const RecallCards = ({ navigation, route }) => {
           }
         }
       } , 1500);
+    } else {
+      dispatch(updateCardWeight(route.params.setIndex, cardNumber, -1));
     }
     setGuess('');
   }
