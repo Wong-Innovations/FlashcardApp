@@ -7,11 +7,33 @@ import Flashcard from './Flashcard';
 
 const RecallCards = ({ navigation, route }) => {
 
+  const flashcards = useSelector(state => state.flashcards[route.params.setIndex]);
+
+  const getRandomCard = () => {
+    let cdf = [0];
+    let counter = 0;
+    flashcards.card.map((card) => {
+      counter += card.srs;
+      cdf.push(counter);
+    });
+    const randomNum = Math.floor(Math.random() * cdf[cdf.length-1]);
+    let start = 0, end = cdf.length-1;
+    while (start <= end) {
+      let mid = Math.floor((end+start)/2);
+      if (start === end)
+        return mid;
+      else if (cdf[mid] <= randomNum && randomNum <= cdf[mid+1])
+        return mid;
+      else if (cdf[mid] < randomNum) 
+        start = mid + 1;
+      else
+        end = mid;
+    }
+  }
+
   const [guess, setGuess] = useState('');
   const [cardCompleted, setCardCompleted] = useState(false);
-  const [cardNumber, setCardNumber] = useState(0);
-
-  const flashcards = useSelector(state => state.flashcards[route.params.setIndex]);
+  const [cardNumber, setCardNumber] = useState(getRandomCard());
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -26,10 +48,13 @@ const RecallCards = ({ navigation, route }) => {
       setTimeout(() => {
         handleChangeCard();
         setCardCompleted(false);
-        if (cardNumber < flashcards.card.length-1)
-          setCardNumber(cardNumber+1);
-        else
-          setCardNumber(0);
+        while (true) {
+          let newIndex = getRandomCard();
+          if (cardNumber !== newIndex) {
+            setCardNumber(newIndex);
+            break;
+          }
+        }
       } , 1500);
     }
     setGuess('');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteCard, addCardPage, createCard } from '../actions/flashcards';
 
@@ -65,7 +65,7 @@ const EditCards = ({ navigation, route }) => {
   return (flashcards === null) ? null : (
     <View style={{ flex: 1, paddingBottom: 110 }}>
       {/* Flashcard Wrapper */}
-      <View style={styles.flashcardWrapper}>
+      <ScrollView style={styles.flashcardWrapper}>
         {(addingCard) ? (
           <View style={styles.flashcard}>
             <SwipeableNewFlashcard
@@ -86,7 +86,7 @@ const EditCards = ({ navigation, route }) => {
             </View>
           )
         })}
-      </View>
+      </ScrollView>
 
       {/* Bottom Button */}
       {(buttonVisible)? (<View style={styles.bottom}>

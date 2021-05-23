@@ -1,4 +1,4 @@
-import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, ADD_CARD_PAGE, GET_CARDS, SAVE_CARDS } from '../constants';
+import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, ADD_CARD_PAGE, GET_CARDS, UPDATE_CARD_WEIGHT } from '../constants';
 
 const initialState = {
   flashcards: [
@@ -9,6 +9,7 @@ const initialState = {
           main: [''],
           secondary: [''],
           answer: '',
+          srs: 0
         },
       ]
     },
@@ -39,7 +40,8 @@ const flashcardsReducer = (state = initialState, action) => {
       newFlashcards[action.setIndex].card.unshift({
         main: action.main,
         secondary: action.secondary,
-        answer: action.answer
+        answer: action.answer,
+        srs: 10
       });
       return { flashcards: newFlashcards };
 
@@ -50,6 +52,13 @@ const flashcardsReducer = (state = initialState, action) => {
 
     case GET_CARDS:
       return { flashcards: action.data };
+
+    case UPDATE_CARD_WEIGHT:
+      newFlashcards[action.setIndex].card[action.cardIndex].srs += action.weightChange;
+      if (newFlashcards[action.setIndex].card[action.cardIndex].srs < 1)
+        return state;
+      else
+        return { flashcards: newFlashcards };
       
     default:
       return state;

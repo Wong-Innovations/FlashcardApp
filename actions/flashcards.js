@@ -1,4 +1,4 @@
-import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, ADD_CARD_PAGE, GET_CARDS, SAVE_CARDS } from '../constants';
+import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, ADD_CARD_PAGE, GET_CARDS, UPDATE_CARD_WEIGHT } from '../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const deleteSet = (index) => ({
@@ -31,6 +31,13 @@ export const addCardPage = (index, index2) => ({
   setIndex: index
 });
 
+export const updateCardWeight = (index, index2, weightChange) => ({
+  type: UPDATE_CARD_WEIGHT,
+  setIndex: index,
+  cardIndex: index2,
+  weightChange: weightChange
+});
+
 export const localGetFlashcards = () => {
   try {
     return async dispatch => {
@@ -44,15 +51,3 @@ export const localGetFlashcards = () => {
     }
   } catch (e) {}
 }
-
-// export const localGetFlashcards = () => (dispatch, getState) => {
-//   return new Promise((resolve, reject) => {
-//     AsyncStorage.getItem('flashcards').then((result) => {
-//       dispatch({
-//         type: GET_CARDS,
-//         data: JSON.parse(result)
-//       });
-//       resolve({ success: true });
-//     });
-//   });
-// }

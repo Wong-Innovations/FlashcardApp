@@ -4,3 +4,4 @@ export const DELETE_CARD = 'DELETE_CARD';
 export const CREATE_CARD = 'CREATE_CARD';
 export const ADD_CARD_PAGE = 'ADD_CARD_PAGE';
 export const GET_CARDS = 'GET_CARDS';
+export const UPDATE_CARD_WEIGHT = 'UPDATE_CARD_WEIGHT';
