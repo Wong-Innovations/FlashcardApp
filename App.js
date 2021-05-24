@@ -13,6 +13,7 @@ import flashcardsReducer from './reducers/flashcardsReducer';
 import FlashcardPreview from './components/FlashcardPreview';
 import RecallCards from './components/RecallCards';
 import EditCards from './components/EditCards';
+import ChoiceCards from './components/ChoiceCards';
 
 const Stack = createStackNavigator();
 const store = createStore(flashcardsReducer, applyMiddleware(thunk));
@@ -41,6 +42,11 @@ export default function App() {
             <Stack.Screen 
               name={'Edit'}
               component={EditCards}
+              options={{ headerBackTitle: 'Back' }}
+            />
+            <Stack.Screen 
+              name={'ChoiceCards'}
+              component={ChoiceCards}
               options={{ headerBackTitle: 'Back' }}
             />
           </Stack.Navigator>

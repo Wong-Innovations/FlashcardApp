@@ -56,9 +56,8 @@ const flashcardsReducer = (state = initialState, action) => {
     case UPDATE_CARD_WEIGHT:
       newFlashcards[action.setIndex].card[action.cardIndex].srs += action.weightChange;
       if (newFlashcards[action.setIndex].card[action.cardIndex].srs < 1)
-        return state;
-      else
-        return { flashcards: newFlashcards };
+        newFlashcards[action.setIndex].card[action.cardIndex].srs = 1;
+      return state;
       
     default:
       return state;

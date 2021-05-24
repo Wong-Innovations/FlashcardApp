@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -16,7 +16,7 @@ import { updateCardWeight } from '../actions/flashcards';
 
 import Flashcard from './Flashcard';
 
-const RecallCards = ({ navigation, route }) => {
+const ChoiceCards = ({ navigation, route }) => {
 
   const flashcards = useSelector(state => state.flashcards[route.params.setIndex]);
 
@@ -44,9 +44,30 @@ const RecallCards = ({ navigation, route }) => {
     }
   }
 
-  const [guess, setGuess] = useState('');
   const [cardCompleted, setCardCompleted] = useState(false);
   const [cardNumber, setCardNumber] = useState(getRandomCard());
+
+  function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+  }
+
+  const populateOptions = () => {
+    let newOptions = [cardNumber];
+    while (newOptions.length < 4) {
+      let i = Math.floor(Math.random() * flashcards.card.length);
+      if (!newOptions.includes(i))
+        newOptions.push(i);
+    }
+    shuffleArray(newOptions);
+    return newOptions;
+  }
+
+  const [options, setOptions] = useState(populateOptions());
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -54,30 +75,27 @@ const RecallCards = ({ navigation, route }) => {
     });
   });
 
-  const handleCheckGuess = () => {
+  const handleCheckGuess = (guess) => {
     Keyboard.dismiss();
     if (guess == flashcards.card[cardNumber].answer) {
-      dispatch(updateCardWeight(route.params.setIndex, cardNumber, 2));
+      dispatch(updateCardWeight(route.params.setIndex, cardNumber, -1));
       setCardCompleted(true);
       setTimeout(() => {
-        handleChangeCard();
         setCardCompleted(false);
         while (true) {
           let newIndex = getRandomCard();
           if (cardNumber !== newIndex) {
             setCardNumber(newIndex);
+            setOptions(populateOptions());
             break;
           }
         }
       } , 1500);
     } else {
-      dispatch(updateCardWeight(route.params.setIndex, cardNumber, -1));
+      dispatch(updateCardWeight(route.params.setIndex, cardNumber, 2));
     }
-    setGuess('');
-  }
-
-  const handleChangeCard = () => {
-
+    console.log('\n\n');
+    console.log(flashcards.card);
   }
 
   return (
@@ -94,32 +112,40 @@ const RecallCards = ({ navigation, route }) => {
       </View>
 
       {/* Answer Verification */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.answerWrapper}
-      >
-        <TextInput
-          style={styles.input}
-          placeholder={'Answer'}
-          value={guess}
-          onChangeText={text => setGuess(text)}
-        />
-
-        <TouchableOpacity onPress={handleCheckGuess}>
-          <View style={styles.buttonWrapper}>
-            <Text style={styles.buttonText}>Check</Text>
+      <View style={styles.answerWrapper}>
+        <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[0]].answer)}>
+          <View style={styles.answerOption}>
+            <Text style={styles.main}>{flashcards.card[options[0]].answer}</Text>
           </View>
         </TouchableOpacity>
-      </KeyboardAvoidingView>
+        <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[1]].answer)}>
+          <View style={styles.answerOption}>
+            <Text style={styles.main}>{flashcards.card[options[1]].answer}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.answerWrapper}>
+        <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[2]].answer)}>
+          <View style={{...styles.answerOption, marginTop: 10 }}>
+            <Text style={styles.main}>{flashcards.card[options[2]].answer}</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[3]].answer)}>
+          <View style={{...styles.answerOption, marginTop: 10 }}>
+            <Text style={styles.main}>{flashcards.card[options[3]].answer}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
 
       {/* Bottom Button */}
-      {(flashcards.card.length > 3)? (<View style={styles.bottom}>
-        <TouchableOpacity onPress={() => navigation.navigate('ChoiceCards', { setIndex: route.params.setIndex })}>
+      <View style={styles.bottom}>
+        <TouchableOpacity onPress={() => navigation.navigate('Cards', { setIndex: route.params.setIndex })}>
           <View style={styles.bottomButtonWrapper}>
-            <Text style={styles.buttonText}>MULTIPLE CHOICE</Text>
+            <Text style={styles.buttonText}>RECALL CARDS</Text>
           </View>
         </TouchableOpacity>
-      </View>) : null}
+      </View>
 
       {/* Success Modal */}
       <Modal
@@ -168,13 +194,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  input: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    width: 250,
+  answerOption: {
     backgroundColor: '#FFF',
-    borderRadius: 60,
-    borderColor: '#C0C0C0',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 45,
+    width: 189,
+  },
+  main: {
+    fontSize: 36,
+    fontWeight: 'bold',
   },
   buttonWrapper: {
     width: 100,
@@ -234,4 +265,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RecallCards;
+export default ChoiceCards;
