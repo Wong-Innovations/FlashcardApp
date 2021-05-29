@@ -46,7 +46,8 @@ const ChoiceCards = ({ navigation, route }) => {
 
   const [cardCompleted, setCardCompleted] = useState(false);
   const [cardNumber, setCardNumber] = useState(getRandomCard());
-
+  const [vertical, setVertical] = useState(false);
+  
   function shuffleArray(array) {
     for (var i = array.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -96,6 +97,14 @@ const ChoiceCards = ({ navigation, route }) => {
     }
   }
 
+  useEffect(()=>{
+    setVertical(false);
+    options.map((option)=>{
+      if (flashcards.card[option].answer.length > 5)
+        setVertical(true);
+    });
+  }, [options]);
+
   return (
     <View style={{ flex: 1 }}>
       {/* Flashcard Wrapper */}
@@ -110,31 +119,69 @@ const ChoiceCards = ({ navigation, route }) => {
       </View>
 
       {/* Answer Verification */}
-      <View style={styles.answerWrapper}>
-        <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[0]].answer)}>
-          <View style={styles.answerOption}>
-            <Text style={styles.main}>{flashcards.card[options[0]].answer}</Text>
+      {(vertical)? (
+        <View>
+          <View style={styles.longAnswerWrapper}>
+            <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[0]].answer)}>
+              <View style={styles.longAnswerOption}>
+                <Text style={styles.main}>{flashcards.card[options[0]].answer}</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[1]].answer)}>
-          <View style={styles.answerOption}>
-            <Text style={styles.main}>{flashcards.card[options[1]].answer}</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
 
-      <View style={styles.answerWrapper}>
-        <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[2]].answer)}>
-          <View style={{...styles.answerOption, marginTop: 10 }}>
-            <Text style={styles.main}>{flashcards.card[options[2]].answer}</Text>
+          <View style={styles.longAnswerWrapper}>
+            <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[1]].answer)}>
+              <View style={{...styles.longAnswerOption, marginTop: 10 }}>
+                <Text style={styles.main}>{flashcards.card[options[1]].answer}</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[3]].answer)}>
-          <View style={{...styles.answerOption, marginTop: 10 }}>
-            <Text style={styles.main}>{flashcards.card[options[3]].answer}</Text>
+
+          <View style={styles.longAnswerWrapper}>
+            <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[2]].answer)}>
+              <View style={{...styles.longAnswerOption, marginTop: 10 }}>
+                <Text style={styles.main}>{flashcards.card[options[2]].answer}</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-      </View>
+
+          <View style={styles.longAnswerWrapper}>
+            <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[3]].answer)}>
+              <View style={{...styles.longAnswerOption, marginTop: 10 }}>
+                <Text style={styles.main}>{flashcards.card[options[3]].answer}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <View>
+          <View style={styles.answerWrapper}>
+            <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[0]].answer)}>
+              <View style={styles.answerOption}>
+                <Text style={styles.main}>{flashcards.card[options[0]].answer}</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[1]].answer)}>
+              <View style={styles.answerOption}>
+                <Text style={styles.main}>{flashcards.card[options[1]].answer}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.answerWrapper}>
+            <TouchableOpacity onPress={() => handleCheckGuess(flashcards.card[options[2]].answer)}>
+              <View style={{...styles.answerOption, marginTop: 10 }}>
+                <Text style={styles.main}>{flashcards.card[options[2]].answer}</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity  onPress={() => handleCheckGuess(flashcards.card[options[3]].answer)}>
+              <View style={{...styles.answerOption, marginTop: 10 }}>
+                <Text style={styles.main}>{flashcards.card[options[3]].answer}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       {/* Bottom Button */}
       <View style={styles.bottom}>
@@ -192,6 +239,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  longAnswerWrapper: {
+    paddingHorizontal: 20,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   answerOption: {
     backgroundColor: '#FFF',
     padding: 15,
@@ -199,7 +252,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 45,
-    width: 189,
+    maxWidth: 189,
+    minWidth: 189,
+  },
+  longAnswerOption: {
+    backgroundColor: '#FFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 390,
   },
   main: {
     fontSize: 36,
