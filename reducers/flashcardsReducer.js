@@ -1,4 +1,4 @@
-import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, ADD_CARD_PAGE, GET_CARDS, UPDATE_CARD_WEIGHT } from '../constants';
+import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, GET_CARDS, UPDATE_CARD_WEIGHT, EDIT_CARD } from '../constants';
 
 const initialState = {
   flashcards: [
@@ -45,9 +45,8 @@ const flashcardsReducer = (state = initialState, action) => {
       });
       return { flashcards: newFlashcards };
 
-    case ADD_CARD_PAGE:
-      newFlashcards[action.setIndex].card[action.cardIndex].main.push('');
-      newFlashcards[action.setIndex].card[action.cardIndex].secondary.push('');
+    case EDIT_CARD:
+      newFlashcards[action.setIndex].card[action.cardIndex] = {...action.newCard, srs: newFlashcards[action.setIndex].card[action.cardIndex].srs};
       return { flashcards: newFlashcards };
 
     case GET_CARDS:

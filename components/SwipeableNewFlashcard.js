@@ -5,8 +5,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Flashcard = (props) => {
 
-  const [borderWidth, setBorderWidth] = useState(1);
-  const [width, setWidth] = useState(75);
   const [currentCard, setCurrentCard] = useState(0);
   
   return (
@@ -53,22 +51,20 @@ const Flashcard = (props) => {
           color={'#a3a3a3'}
         />}
         <View style={{ flexDirection: 'row' }}>
-          <Text style={styles.answer}>Answer: {props.value.answer}</Text>
           <TextInput
-            style={{ ...styles.answerInput, borderBottomWidth: borderWidth, width: width }}
+            style={styles.answerInput}
             value={props.value.answer}
             onChangeText={text => props.onChangeText({
               main: props.value.main,
               secondary: props.value.secondary,
               answer: text
             })}
-            onFocus={() => {setBorderWidth(0);setWidth(0);}}
+            placeholder='Answer'
           />
         </View>
         <TouchableOpacity
           onPress={() => {
             if (props.value.main[currentCard+1] === undefined)
-              //props.onNewCardPage(currentCard);
               setCurrentCard({
                 main: [...props.value.main,''],
                 secondary: [...props.value.secondary,''],

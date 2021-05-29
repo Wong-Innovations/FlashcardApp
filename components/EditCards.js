@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteCard, addCardPage, createCard } from '../actions/flashcards';
+import { deleteCard, createCard, editCard } from '../actions/flashcards';
 
 import Flashcard from './Flashcard';
 import SwipeableNewFlashcard from './SwipeableNewFlashcard';
@@ -10,9 +10,14 @@ const EditCards = ({ navigation, route }) => {
 
   const [buttonVisible, setButtonVisible] = useState(1);
   const [addingCard, setAddingCard] = useState(false);
-  const [cardNumber, setCardNumber] = useState(0);
-  const [editCard, setEditCard] = useState(-1);
+  const [updateCardNum, setUpdateCardNum] = useState(-1);
+  const [editCardNum, setEditCardNum] = useState(-1);
   const [newCard, setNewCard] = useState({
+    main: [''],
+    secondary: [''],
+    answer: ''
+  });
+  const [updateCard, setUpdateCard] = useState({
     main: [''],
     secondary: [''],
     answer: ''
@@ -22,18 +27,18 @@ const EditCards = ({ navigation, route }) => {
 
   const dispatch = useDispatch();
   const deletecard = (setIndex, cardIndex) => dispatch(deleteCard(setIndex, cardIndex));
-  const addcardpage = (setIndex, cardIndex) => dispatch(addCardPage(setIndex, cardIndex));
+  const editcard = (setIndex, cardIndex, value) => dispatch(editCard(setIndex, cardIndex, value));
   const savecard = (setIndex, card) => dispatch(createCard(setIndex, card));
 
   // setAsyncCall(true);
   // localGetFlashcards().then((val) => setFlashcards(val)).then(() => setAsyncCall(false));
 
   const openContext = (index) => {
-    setEditCard(index);
+    setEditCardNum(index);
   }
 
   const closeContext = () => {
-    setEditCard(-1);
+    setEditCardNum(-1);
   }
 
   const addCard = () => {
@@ -42,8 +47,15 @@ const EditCards = ({ navigation, route }) => {
   }
 
   const saveCard = () => {
-    savecard(route.params.setIndex, newCard);
-    closeCard();
+    if (addingCard) {
+      savecard(route.params.setIndex, newCard);
+      closeCard();
+    }
+    else {
+      editcard(route.params.setIndex,updateCardNum,updateCard);
+      setUpdateCardNum(-1);
+      setButtonVisible(1);
+    }
   }
 
   const closeCard = () => {
@@ -71,12 +83,18 @@ const EditCards = ({ navigation, route }) => {
             <SwipeableNewFlashcard
               value={newCard}
               onChangeText={setNewCard}
-              onNewCardPage={(index) => addcardpage(route.params.setIndex, index)}
             />
           </View>
         ) : null}
         {flashcards.card.map((flashcard, index) => {
-          return (
+          return (index === updateCardNum)? (
+            <View style={styles.flashcard}>
+              <SwipeableNewFlashcard
+                value={updateCard}
+                onChangeText={setUpdateCard}
+              />
+            </View>
+          ) : (
             <View style={styles.flashcard}>
               <Flashcard
                 main={flashcard.main}
@@ -107,7 +125,7 @@ const EditCards = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>)}
 
-      {(editCard > -1)? (
+      {(editCardNum > -1)? (
         <View style={{
           ...styles.bottom,
           borderWidth:2,
@@ -115,7 +133,12 @@ const EditCards = ({ navigation, route }) => {
           backgroundColor:'#FFF',
           zIndex:1000,
         }}>
-          <TouchableOpacity onPress={() => {closeContext()}}>
+          <TouchableOpacity onPress={() => {
+            setUpdateCard(flashcards.card[editCardNum]);
+            setUpdateCardNum(editCardNum);
+            setEditCardNum(-1);
+            setButtonVisible(0);
+          }}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>EDIT</Text>
             </View>
@@ -128,7 +151,7 @@ const EditCards = ({ navigation, route }) => {
             }}
           />
           <TouchableOpacity onPress={() => {
-            deletecard(route.params.setIndex, editCard);
+            deletecard(route.params.setIndex, editCardNum);
             closeContext();
           }}>
             <View style={styles.contextButtons}>
