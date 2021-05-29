@@ -1,4 +1,4 @@
-import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, GET_CARDS, UPDATE_CARD_WEIGHT, EDIT_CARD } from '../constants';
+import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, GET_CARDS, UPDATE_CARD_WEIGHT, EDIT_CARD, EDIT_SET } from '../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const deleteSet = (index) => ({
@@ -31,6 +31,12 @@ export const editCard = (index, index2, value) => ({
   setIndex: index,
   cardIndex: index2,
   newCard: value
+});
+
+export const editSet = (index, value) => ({
+  type: EDIT_SET,
+  setIndex: index,
+  newSet: value
 });
 
 export const updateCardWeight = (index, index2, weightChange) => ({

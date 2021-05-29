@@ -94,8 +94,6 @@ const ChoiceCards = ({ navigation, route }) => {
     } else {
       dispatch(updateCardWeight(route.params.setIndex, cardNumber, 2));
     }
-    console.log('\n\n');
-    console.log(flashcards.card);
   }
 
   return (

@@ -1,4 +1,4 @@
-import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, GET_CARDS, UPDATE_CARD_WEIGHT, EDIT_CARD } from '../constants';
+import { DELETE_SET, DELETE_CARD, CREATE_SET, CREATE_CARD, GET_CARDS, UPDATE_CARD_WEIGHT, EDIT_CARD, EDIT_SET } from '../constants';
 
 const initialState = {
   flashcards: [
@@ -47,6 +47,11 @@ const flashcardsReducer = (state = initialState, action) => {
 
     case EDIT_CARD:
       newFlashcards[action.setIndex].card[action.cardIndex] = {...action.newCard, srs: newFlashcards[action.setIndex].card[action.cardIndex].srs};
+      return { flashcards: newFlashcards };
+
+    case EDIT_SET:
+      newFlashcards[action.setIndex].name = action.newSet.name;
+      newFlashcards[action.setIndex].description = action.newSet.description;
       return { flashcards: newFlashcards };
 
     case GET_CARDS:

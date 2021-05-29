@@ -5,7 +5,7 @@ import { useSelector, useDispatch, connect } from 'react-redux';
 
 import Flashcard from './Flashcard';
 import NewFlashcard from './NewFlashcard';
-import { deleteSet, createSet, localGetFlashcards } from '../actions/flashcards';
+import { deleteSet, createSet, editSet, localGetFlashcards } from '../actions/flashcards';
 
 const FlashcardPreview = ({ navigation }) => {
   
@@ -15,11 +15,17 @@ const FlashcardPreview = ({ navigation }) => {
     name: '',
     description: ''
   });
+  const [updateSet, setUpdateSet] = useState({
+    name: '',
+    description: ''
+  });
+  const [updateSetNum, setUpdateSetNum] = useState(-1);
   const [editCard, setEditCard] = useState(-1);
   const flashcards = useSelector(state => state.flashcards);
   const dispatch = useDispatch();
   const deleteset = index => dispatch(deleteSet(index));
   const createset = (name, description) => dispatch(createSet(name, description));
+  const editset = (index, value) => dispatch(editSet(index, value));
 
   // setAsyncCall(true);
   // localGetFlashcards().then((val) => setFlashcards(val)).then(() => setAsyncCall(false));
@@ -36,8 +42,14 @@ const FlashcardPreview = ({ navigation }) => {
   }
 
   const saveCard = () => {
-    createset(newCard.name, newCard.description);
-    closeCard();
+    if (addingCard) {
+      createset(newCard.name, newCard.description);
+      closeCard();
+    } else {
+      editset(updateSetNum, updateSet);
+      setUpdateSetNum(-1);
+      setButtonVisible(1);
+    }
   }
 
   const closeCard = () => {
@@ -79,7 +91,14 @@ const FlashcardPreview = ({ navigation }) => {
           </View>
         ) : null}
         {flashcards.map((flashcard, index) => {
-          return (
+          return (index === updateSetNum)? (
+            <View style={styles.flashcard}>
+              <NewFlashcard
+                value={updateSet}
+                onChangeText={setUpdateSet}
+              />
+            </View>
+          ) : (
             <View style={styles.flashcard}>
               <Flashcard
                 main={[flashcard.name]}
@@ -88,7 +107,7 @@ const FlashcardPreview = ({ navigation }) => {
                 onLongPress={() => openContext(index)}
               />
             </View>
-          )
+          );
         })}
       </ScrollView>
       {/* Bottom Button */}
@@ -121,6 +140,23 @@ const FlashcardPreview = ({ navigation }) => {
           <TouchableOpacity onPress={() => {navigation.navigate('Edit', { setIndex: editCard });closeContext()}}>
             <View style={styles.contextButtons}>
               <Text style={styles.buttonText}>EDIT</Text>
+            </View>
+          </TouchableOpacity>
+          <View
+            style={{
+              width: 350,
+              borderBottomColor: 'black',
+              borderBottomWidth: 1,
+            }}
+          />
+          <TouchableOpacity onPress={() => {
+            setUpdateSet(flashcards[editCard]);
+            setUpdateSetNum(editCard);
+            setEditCard(-1);
+            setButtonVisible(0);
+          }}>
+            <View style={styles.contextButtons}>
+              <Text style={styles.buttonText}>RENAME</Text>
             </View>
           </TouchableOpacity>
           <View
