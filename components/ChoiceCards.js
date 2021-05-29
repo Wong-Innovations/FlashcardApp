@@ -57,8 +57,8 @@ const ChoiceCards = ({ navigation, route }) => {
     }
   }
 
-  const populateOptions = () => {
-    let newOptions = [cardNumber];
+  const populateOptions = (ans) => {
+    let newOptions = [ans];
     while (newOptions.length < 4) {
       let i = Math.floor(Math.random() * flashcards.card.length);
       if (!newOptions.includes(i))
@@ -68,7 +68,7 @@ const ChoiceCards = ({ navigation, route }) => {
     return newOptions;
   }
 
-  const [options, setOptions] = useState(populateOptions());
+  const [options, setOptions] = useState(populateOptions(cardNumber));
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -87,7 +87,7 @@ const ChoiceCards = ({ navigation, route }) => {
           let newIndex = getRandomCard();
           if (cardNumber !== newIndex) {
             setCardNumber(newIndex);
-            setOptions(populateOptions());
+            setOptions(populateOptions(newIndex));
             break;
           }
         }
@@ -98,11 +98,12 @@ const ChoiceCards = ({ navigation, route }) => {
   }
 
   useEffect(()=>{
-    setVertical(false);
+    let temp = false;
     options.map((option)=>{
       if (flashcards.card[option].answer.length > 5)
-        setVertical(true);
+        temp = true;
     });
+    setVertical(temp);
   }, [options]);
 
   return (
@@ -182,6 +183,7 @@ const ChoiceCards = ({ navigation, route }) => {
           </View>
         </View>
       )}
+      {(vertical)? console.log(`wide-render ${options}`) : console.log(`grid-render ${options}`)}
 
       {/* Bottom Button */}
       <View style={styles.bottom}>
@@ -252,8 +254,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 45,
-    maxWidth: 189,
-    minWidth: 189,
+    maxWidth: 182,
+    minWidth: 182,
   },
   longAnswerOption: {
     backgroundColor: '#FFF',
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 390,
+    width: 375,
   },
   main: {
     fontSize: 36,
