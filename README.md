@@ -14,6 +14,6 @@ I wanted to create an app to help me study Japanese vocabulary for when I travel
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Dylan Wong - dylanwong@nevada.unr.edu
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/Wong-Innovations/FlashcardApp](https://github.com/Wong-Innovations/FlashcardApp)
