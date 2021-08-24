@@ -1,9 +1,9 @@
 # Flashcard App
 
 <p float="left">
-  <img src="/demo1.png" width="300" />
-  <img src="/demo2.png" width="300" /> 
-  <img src="/demo3.png" width="300" />
+  <img src="/demo1.png" width="250" />
+  <img src="/demo2.png" width="250" /> 
+  <img src="/demo3.png" width="250" />
 </p>
 
 <!-- CONTACT -->
