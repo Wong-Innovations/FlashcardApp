@@ -1,8 +1,10 @@
 # Flashcard App
 
-![Screenshot](demo1.png)
-![Screenshot](demo2.png)
-![Screenshot](demo3.png)
+<p float="left">
+  <img src="/demo1.png" width="100" />
+  <img src="/demo2.png" width="100" /> 
+  <img src="/demo3.png" width="100" />
+</p>
 
 <!-- CONTACT -->
 ## Contact
